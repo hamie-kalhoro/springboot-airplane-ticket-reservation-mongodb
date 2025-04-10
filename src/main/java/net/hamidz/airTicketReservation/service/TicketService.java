@@ -3,6 +3,7 @@ package net.hamidz.airTicketReservation.service;
 import net.hamidz.airTicketReservation.entity.Ticket;
 import net.hamidz.airTicketReservation.entity.User;
 import net.hamidz.airTicketReservation.repository.TicketRepository;
+import net.hamidz.airTicketReservation.repository.UserRepository;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
