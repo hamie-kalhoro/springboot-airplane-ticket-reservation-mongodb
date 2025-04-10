@@ -4,6 +4,8 @@ import net.hamidz.airTicketReservation.entity.Flight;
 import net.hamidz.airTicketReservation.repository.FlightRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 import java.util.Set;
 
 @Service
@@ -11,6 +13,16 @@ public class FlightService {
 
     @Autowired
     private FlightRepository flightRepository;
+
+    // ✅ Create a new flight (Admin only)
+    public Flight createFlight(Flight flight) {
+        return flightRepository.save(flight);
+    }
+
+    // ✅ Get all flights (for listing available flights)
+    public List<Flight> getAllFlights() {
+        return flightRepository.findAll();
+    }
 
     public Set<Integer> getAvailableSeats(String flightNumber) {
         Flight flight = getFlightByNumber(flightNumber);
