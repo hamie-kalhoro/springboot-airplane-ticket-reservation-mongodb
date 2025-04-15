@@ -3,11 +3,14 @@ package net.hamidz.airTicketReservation.controller;
 import net.hamidz.airTicketReservation.entity.Ticket;
 import net.hamidz.airTicketReservation.entity.User;
 import net.hamidz.airTicketReservation.service.TicketService;
+import net.hamidz.airTicketReservation.service.UserDetailsServiceImpl;
 import net.hamidz.airTicketReservation.service.UserService;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
@@ -19,16 +22,21 @@ public class TicketController {
 
     TicketService ticketService;
     UserService userService;
+    UserDetailsServiceImpl userDetailsServiceImpl;
     @Autowired
-    public TicketController(TicketService ticketService, UserService userService) {
+    public TicketController(TicketService ticketService,
+                            UserService userService,
+                            UserDetailsServiceImpl userDetailsServiceImpl) {
         this.ticketService = ticketService;
         this.userService = userService;
+        this.userDetailsServiceImpl = userDetailsServiceImpl;
     }
 
-    @PostMapping("/register-ticket/{username}")
-    public ResponseEntity<Ticket> registerTicket(@RequestBody Ticket ticket, @PathVariable String username) {
+    @PostMapping("/register-ticket")
+    public ResponseEntity<Ticket> registerTicket(@RequestBody Ticket ticket) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
         try {
-
             ticketService.saveTicket(ticket, username);
             return new ResponseEntity<>(ticket, HttpStatus.CREATED);
         } catch (Exception e) {
@@ -36,8 +44,10 @@ public class TicketController {
         }
     }
 
-    @GetMapping("/get-all-tickets/{username}")
-    public ResponseEntity<List<Ticket>> getAll(@PathVariable String username) {
+    @GetMapping("/get-all-tickets")
+    public ResponseEntity<List<Ticket>> getAll() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
         User user = userService.findUserByUsername(username);
         List<Ticket> allTickets = user.getTickets();
         if(allTickets != null && !allTickets.isEmpty()) {
@@ -52,16 +62,19 @@ public class TicketController {
         return new ResponseEntity<>(ticketService.findTicketById(ticketId), HttpStatus.OK);
     }
 
-    @DeleteMapping("/{username}/{ticketId}")
-    public ResponseEntity<?> deleteTicket(@PathVariable ObjectId ticketId, @PathVariable String username) {
+    @DeleteMapping("/{ticketId}")
+    public ResponseEntity<?> deleteTicket(@PathVariable ObjectId ticketId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
         ticketService.deleteTicketById(ticketId, username);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @PutMapping("/{username}/{ticketId}")
+    @PutMapping("/{ticketId}")
     public ResponseEntity<Ticket> updateTicket( @PathVariable ObjectId ticketId,
-                                                @RequestBody Ticket newTicket,
-                                                @PathVariable String username ) {
+                                                @RequestBody Ticket newTicket ) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
         Ticket ticket = ticketService.findTicketById(ticketId).orElse(null);
         if(ticket != null) {
             ticket.setTicketType(ticket.getTicketType() != null && !ticket.getTicketType().isEmpty() ?

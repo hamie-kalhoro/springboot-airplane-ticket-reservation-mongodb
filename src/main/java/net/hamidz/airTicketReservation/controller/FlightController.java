@@ -24,7 +24,6 @@ public class FlightController {
         return new ResponseEntity<>(flightService.createFlight(flight), HttpStatus.CREATED);
     }
 
-    // ✅ 2. Get All Flights
     @GetMapping
     public ResponseEntity<List<Flight>> getAllFlights() {
         return ResponseEntity.ok(flightService.getAllFlights());

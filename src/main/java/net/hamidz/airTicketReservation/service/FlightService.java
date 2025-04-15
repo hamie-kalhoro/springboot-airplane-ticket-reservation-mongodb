@@ -14,12 +14,10 @@ public class FlightService {
     @Autowired
     private FlightRepository flightRepository;
 
-    // ✅ Create a new flight (Admin only)
     public Flight createFlight(Flight flight) {
         return flightRepository.save(flight);
     }
 
-    // ✅ Get all flights (for listing available flights)
     public List<Flight> getAllFlights() {
         return flightRepository.findAll();
     }
